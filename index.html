@@ -1,0 +1,731 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Ivory-Chess</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F7EDD8" />
+    <meta
+      name="description"
+      content="Ivory Chess is a luxury chess experience crafted for focused, elegant play. Download the Android APK directly."
+    />
+    <link rel="icon" type="image/png" href="favicon.png" sizes="any" />
+    <link rel="apple-touch-icon" href="favicon.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,300;1,700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f7edd8;
+        --fg: #2c1810;
+        --card: #faf3e0;
+        --primary: #6b3f25;
+        --primary-fg: #faf3e0;
+        --muted: #8a6848;
+        --border: #d4b896;
+        --accent: #c4943a;
+        --shadow: rgba(44, 24, 16, 0.14);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        color: var(--fg);
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0)
+          env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+        background:
+          radial-gradient(circle at 12% 12%, rgba(196, 148, 58, 0.12), transparent 44%),
+          radial-gradient(circle at 90% 4%, rgba(107, 63, 37, 0.08), transparent 36%),
+          linear-gradient(180deg, #fbf4e3 0%, var(--bg) 40%, #f2e4c8 100%);
+        font-family: "Playfair Display", serif;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      .watermark {
+        position: fixed;
+        right: max(-18px, calc(-1 * env(safe-area-inset-right, 0px)));
+        top: max(8px, env(safe-area-inset-top, 0px));
+        font-size: min(52vw, 420px);
+        opacity: 0.055;
+        color: #6b3f25;
+        line-height: 0.85;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        width: 100%;
+        padding: clamp(16px, 4.5vw, 32px) clamp(14px, 5vw, 28px) clamp(28px, 7vw, 52px);
+      }
+
+      .hero-card {
+        position: relative;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: linear-gradient(160deg, rgba(250, 243, 224, 0.95), rgba(247, 237, 216, 0.92));
+        box-shadow: 0 14px 30px var(--shadow);
+        overflow: hidden;
+      }
+
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(
+          to bottom right,
+          rgba(255, 255, 255, 0.42) 0%,
+          rgba(255, 255, 255, 0) 38%,
+          rgba(107, 63, 37, 0.04) 100%
+        );
+      }
+
+      .hero {
+        position: relative;
+        padding: clamp(24px, 7vw, 44px) clamp(14px, 5vw, 26px) clamp(22px, 6vw, 36px);
+        text-align: center;
+      }
+
+      .hero-mark-wrap {
+        margin: 0 auto 4px;
+        width: clamp(72px, 22vw, 112px);
+        height: clamp(72px, 22vw, 112px);
+        border-radius: 28%;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: 0 10px 28px rgba(44, 24, 16, 0.12);
+        background: linear-gradient(145deg, #faf3e0, #ede0c4);
+      }
+
+      .hero-mark {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 42%;
+        display: block;
+      }
+
+      .pre-title {
+        margin: 0;
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-size: clamp(15px, 3.8vw, 18px);
+        color: var(--muted);
+        letter-spacing: 1.1px;
+      }
+
+      .wordmark-ivory {
+        margin: 12px 0 0;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(22px, 6.2vw, 48px);
+        font-weight: 300;
+        letter-spacing: clamp(0.28em, 2.2vw, 0.42em);
+        text-indent: clamp(0.28em, 2.2vw, 0.42em);
+        color: #1a0f08;
+      }
+
+      .wordmark-chess {
+        margin: -6px 0 0;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(44px, 12.5vw, 126px);
+        line-height: 0.95;
+        font-weight: 700;
+        letter-spacing: clamp(0.06em, 1.4vw, 0.12em);
+        text-indent: clamp(0.06em, 1.4vw, 0.12em);
+        color: #1a0f08;
+      }
+
+      .rule {
+        width: 54px;
+        height: 2px;
+        margin: 18px auto 14px;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+
+      .tagline {
+        margin: 0 auto;
+        max-width: 36rem;
+        padding: 0 2px;
+        color: var(--muted);
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-size: clamp(17px, 4.2vw, 28px);
+        line-height: 1.35;
+      }
+
+      .meta {
+        margin-top: 16px;
+        font-family: "Cinzel", serif;
+        font-size: clamp(10px, 2.8vw, 12px);
+        letter-spacing: 0.08em;
+        color: #7b583a;
+        padding: 0 8px;
+        line-height: 1.4;
+      }
+
+      .cta-row {
+        margin-top: clamp(20px, 5vw, 28px);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+        width: 100%;
+        max-width: 22rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .btn {
+        width: 100%;
+        max-width: 22rem;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+        text-align: center;
+        min-height: 48px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: var(--primary-fg);
+        border: 1px solid rgba(107, 63, 37, 0.75);
+        box-shadow: 0 8px 20px rgba(107, 63, 37, 0.2);
+        padding: 15px 18px;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(107, 63, 37, 0.24);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+        opacity: 0.96;
+      }
+
+      .btn-primary-title {
+        display: block;
+        font-family: "Cinzel", serif;
+        font-size: 14px;
+        letter-spacing: 0.7px;
+      }
+
+      .btn-primary-sub {
+        display: block;
+        margin-top: 4px;
+        opacity: 0.84;
+        font-size: clamp(12px, 3.2vw, 13px);
+      }
+
+      .brand-lower {
+        margin-top: clamp(28px, 6vw, 40px);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(20px, 4.5vw, 28px);
+      }
+
+      .section {
+        position: relative;
+        margin-top: 0;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: linear-gradient(165deg, rgba(252, 248, 236, 0.98), rgba(247, 237, 216, 0.94));
+        box-shadow:
+          0 16px 36px rgba(44, 24, 16, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.65);
+        padding: clamp(22px, 5.5vw, 32px) clamp(18px, 4.5vw, 28px);
+        overflow: hidden;
+      }
+
+      .section::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(
+          125deg,
+          rgba(255, 255, 255, 0.38) 0%,
+          rgba(255, 255, 255, 0) 42%,
+          rgba(196, 148, 58, 0.06) 100%
+        );
+      }
+
+      .section::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(200px, 45%);
+        height: 3px;
+        border-radius: 0 0 999px 999px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        opacity: 0.85;
+        pointer-events: none;
+      }
+
+      .section-inner {
+        position: relative;
+        z-index: 1;
+      }
+
+      .section-head {
+        text-align: center;
+        margin-bottom: clamp(20px, 4vw, 28px);
+        max-width: 28rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .section-eyebrow {
+        margin: 0;
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-weight: 300;
+        font-size: clamp(14px, 3.2vw, 17px);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .section-rule {
+        width: 36px;
+        height: 2px;
+        margin: 12px auto 10px;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+
+      .section-title {
+        margin: 0;
+        font-family: "Cinzel", serif;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-size: clamp(13px, 2.9vw, 15px);
+        color: #1a0f08;
+      }
+
+      .section-sub {
+        margin: 10px 0 0;
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-size: clamp(15px, 3.6vw, 18px);
+        color: var(--muted);
+        line-height: 1.45;
+        font-weight: 300;
+      }
+
+      .features {
+        display: grid;
+        gap: clamp(14px, 3vw, 18px);
+      }
+
+      .feature {
+        position: relative;
+        border: 1px solid rgba(212, 184, 150, 0.85);
+        border-radius: 12px;
+        padding: clamp(16px, 4vw, 22px) clamp(16px, 4vw, 22px) clamp(14px, 3.5vw, 20px);
+        padding-left: clamp(52px, 12vw, 58px);
+        background: linear-gradient(145deg, #fdfaf2 0%, #faf3e0 55%, #f5ebd4 100%);
+        box-shadow:
+          0 6px 18px rgba(44, 24, 16, 0.06),
+          inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      }
+
+      .feature::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 12px;
+        bottom: 12px;
+        width: 3px;
+        border-radius: 0 4px 4px 0;
+        background: linear-gradient(180deg, var(--accent), rgba(196, 148, 58, 0.45));
+      }
+
+      .feature-glyph {
+        position: absolute;
+        left: clamp(14px, 3.5vw, 18px);
+        top: clamp(15px, 3.8vw, 20px);
+        font-size: clamp(20px, 5vw, 26px);
+        line-height: 1;
+        color: var(--primary);
+        opacity: 0.88;
+        text-shadow: 0 1px 0 rgba(255, 250, 240, 0.9);
+      }
+
+      .feature h3 {
+        margin: 0 0 8px;
+        font-size: clamp(16px, 3.6vw, 19px);
+        font-family: "Playfair Display", serif;
+        font-weight: 700;
+        color: #1a0f08;
+        letter-spacing: 0.02em;
+      }
+
+      .feature p {
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(13px, 3.3vw, 15px);
+        line-height: 1.55;
+        font-family: "Playfair Display", serif;
+      }
+
+      .steps {
+        display: grid;
+        gap: clamp(14px, 3vw, 18px);
+      }
+
+      .step {
+        position: relative;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: clamp(16px, 4vw, 22px);
+        border-radius: 12px;
+        border: 1px solid rgba(212, 184, 150, 0.75);
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.35), rgba(250, 243, 224, 0.92));
+        box-shadow: 0 8px 20px rgba(44, 24, 16, 0.05);
+      }
+
+      .step-head {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .step-number {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 1px solid rgba(107, 63, 37, 0.35);
+        background: linear-gradient(160deg, var(--primary), #5a3520);
+        color: var(--primary-fg);
+        font-family: "Cinzel", serif;
+        font-size: 14px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(107, 63, 37, 0.25);
+      }
+
+      .step-label {
+        font-family: "Cinzel", serif;
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .step-body {
+        min-width: 0;
+        flex: 1;
+        padding-top: 2px;
+      }
+
+      .step-title {
+        margin: 0 0 6px;
+        font-family: "Playfair Display", serif;
+        font-weight: 700;
+        font-size: clamp(15px, 3.5vw, 17px);
+        color: #1a0f08;
+      }
+
+      .step p {
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(13px, 3.3vw, 15px);
+        line-height: 1.55;
+        font-family: "Playfair Display", serif;
+      }
+
+      .step p strong {
+        color: #4a2c1a;
+        font-weight: 700;
+      }
+
+      .brand-coda {
+        margin-top: clamp(8px, 2vw, 12px);
+        padding: clamp(28px, 6vw, 40px) clamp(16px, 4vw, 24px) clamp(8px, 2vw, 16px);
+        text-align: center;
+      }
+
+      .coda-rule {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: clamp(18px, 4vw, 24px);
+        color: var(--accent);
+        opacity: 0.9;
+      }
+
+      .coda-rule::before,
+      .coda-rule::after {
+        content: "";
+        flex: 1;
+        max-width: 120px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border), transparent);
+      }
+
+      .coda-rule span {
+        font-size: 11px;
+        letter-spacing: 0.35em;
+        font-family: "Cinzel", serif;
+        color: var(--primary);
+        white-space: nowrap;
+      }
+
+      .footer-note {
+        margin: 0 auto;
+        max-width: 26rem;
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-weight: 300;
+        font-size: clamp(17px, 4.2vw, 22px);
+        color: #6b4e38;
+        line-height: 1.45;
+        letter-spacing: 0.02em;
+      }
+
+      .footer-note::before {
+        content: "“";
+        display: block;
+        font-size: clamp(28px, 7vw, 40px);
+        line-height: 0.9;
+        color: var(--accent);
+        opacity: 0.65;
+        margin-bottom: 4px;
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .footer-note::after {
+        content: "”";
+        display: block;
+        font-size: clamp(28px, 7vw, 40px);
+        line-height: 0.9;
+        color: var(--accent);
+        opacity: 0.65;
+        margin-top: 8px;
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .coda-attribution {
+        margin: 14px 0 0;
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-size: clamp(13px, 3.2vw, 15px);
+        color: var(--muted);
+      }
+
+      @media (min-width: 480px) {
+        .watermark {
+          font-size: min(42vw, 380px);
+        }
+      }
+
+      @media (min-width: 760px) {
+        .container {
+          padding: 42px 28px 56px;
+        }
+
+        .hero {
+          padding: 56px 36px 44px;
+        }
+
+        .cta-row {
+          max-width: none;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .btn {
+          width: auto;
+          min-width: 280px;
+        }
+
+        .features {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .steps {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .step {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding-top: clamp(20px, 3vw, 26px);
+        }
+
+        .step-head {
+          flex-direction: column;
+        }
+
+        .step-body {
+          padding-top: 0;
+        }
+      }
+
+      @media (min-width: 1100px) {
+        .hero-card {
+          border-radius: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="watermark">♔</div>
+    <main class="container">
+      <section class="hero-card">
+        <div class="hero">
+          <div class="hero-mark-wrap" aria-hidden="true">
+            <img class="hero-mark" src="favicon.png" alt="" width="112" height="112" decoding="async" />
+          </div>
+          <p class="pre-title">The Royal Game</p>
+          <h1 class="wordmark-ivory">IVORY</h1>
+          <div class="wordmark-chess">CHESS</div>
+          <div class="rule"></div>
+          <p class="tagline">An intimate sanctuary of strategy.</p>
+          <div class="meta">Ivory Chess · Crafted for Android</div>
+
+          <div class="cta-row">
+            <a
+              class="btn btn-primary"
+              id="apk-download-btn"
+              href="https://expo.dev/artifacts/eas/fSCYvfxrEZ8ztsgr26Gj8z.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="btn-primary-title">Download APK</span>
+              <span class="btn-primary-sub">Direct install from your website</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <div class="brand-lower">
+        <section class="section" aria-labelledby="features-heading">
+          <div class="section-inner">
+            <header class="section-head">
+              <p class="section-eyebrow">Ivory · Experience</p>
+              <div class="section-rule" aria-hidden="true"></div>
+              <h2 id="features-heading" class="section-title">The Atelier</h2>
+              <p class="section-sub">Every detail composed to echo the quiet confidence of the board.</p>
+            </header>
+            <div class="features">
+              <article class="feature">
+                <span class="feature-glyph" aria-hidden="true">♔</span>
+                <h3>Letterpress identity</h3>
+                <p>Typography, rhythm, and tone align with the app—one unmistakable Ivory Chess presence.</p>
+              </article>
+              <article class="feature">
+                <span class="feature-glyph" aria-hidden="true">♗</span>
+                <h3>Premium sound design</h3>
+                <p>Layered move, capture, and finish cues reward each decision with tactile elegance.</p>
+              </article>
+              <article class="feature">
+                <span class="feature-glyph" aria-hidden="true">♜</span>
+                <h3>Heritage &amp; engine</h3>
+                <p>Two-player tradition beside a focused AI opponent—modes worthy of the name.</p>
+              </article>
+              <article class="feature">
+                <span class="feature-glyph" aria-hidden="true">♙</span>
+                <h3>Direct installation</h3>
+                <p>Your APK, your domain—no storefront between the player and the ritual of play.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="install-heading">
+          <div class="section-inner">
+            <header class="section-head">
+              <p class="section-eyebrow">Ivory · Android</p>
+              <div class="section-rule" aria-hidden="true"></div>
+              <h2 id="install-heading" class="section-title">The Installation</h2>
+              <p class="section-sub">Three composed movements from download to first move.</p>
+            </header>
+            <div class="steps">
+              <div class="step">
+                <div class="step-head">
+                  <div class="step-number">1</div>
+                  <span class="step-label">Acquire</span>
+                </div>
+                <div class="step-body">
+                  <p class="step-title">Secure the installer</p>
+                  <p>Tap <strong>Download APK</strong> and save the file to your Android device.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-head">
+                  <div class="step-number">2</div>
+                  <span class="step-label">Permit</span>
+                </div>
+                <div class="step-body">
+                  <p class="step-title">Trust, deliberately</p>
+                  <p>When prompted, allow <strong>Install unknown apps</strong> for your browser or files app.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-head">
+                  <div class="step-number">3</div>
+                  <span class="step-label">Begin</span>
+                </div>
+                <div class="step-body">
+                  <p class="step-title">Open the boardroom</p>
+                  <p>Open the APK, complete install, and launch <strong>Ivory Chess</strong>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="brand-coda">
+        <div class="coda-rule" aria-hidden="true"><span>IVORY CHESS</span></div>
+        <p class="footer-note">Chess is the art of analysis.</p>
+        <p class="coda-attribution">A quiet companion for serious minds.</p>
+      </footer>
+    </main>
+  </body>
+</html>
